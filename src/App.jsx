@@ -1,33 +1,42 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from "react"
 
 function App() {
-  const [count, setCount] = useState(0)
+
+  const [img,setImg] = useState({})
+
+  const handleClick = async () => {
+    console.log("button clicked.")
+    // const partParams = ["snippet","contentDetails","statistics"]
+    // const url = `https://youtube.googleapis.com/youtube/v3/channels?part=${partParams.join("%2C")}&id=UCQ59QpOnFZ8byWmE8ayTtaw&key=${import.meta.env.VITE_key}`;
+
+    const url = `https://youtube.googleapis.com/youtube/v3/playlists?part=snippet%2CcontentDetails&channelId=UCfR8HhkbpDAwvYxrecNg4Mg&maxResults=25&key=${import.meta.env.VITE_key}`
+    
+    console.log(url)
+
+    try{
+
+      const response = await fetch(url);
+      if (!response.ok){
+        throw new Error(`Response status: ${response.status}`)
+      }
+      const json = await response.json();
+      console.log(json.items[0].snippet.thumbnails);
+      setImg(json.items[0].snippet.thumbnails.high)
+
+    } catch (error) {
+      console.error(error.message)
+    }
+  }
 
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+      <div className="p-5">
+        <h1 className="text-2xl font-bold mb-2">Hello World</h1> 
+        <button className="border px-2 py-1 border-black" onClick={handleClick}>Click me</button>
+        {img ? 
+          <img src={img.url} width={img.width} height={img.height} alt="" />
+        : <></>}
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
     </>
   )
 }
