@@ -1,8 +1,10 @@
 import { useState } from "react"
+import Video from "./components/Video";
 
 function App() {
 
-  const [img,setImg] = useState({})
+  const [img,setImg] = useState({});
+  const [playlists, setPlaylists] = useState([])
 
   const handleClick = async () => {
     console.log("button clicked.")
@@ -20,8 +22,11 @@ function App() {
         throw new Error(`Response status: ${response.status}`)
       }
       const json = await response.json();
-      console.log(json.items[0].snippet.thumbnails);
-      setImg(json.items[0].snippet.thumbnails.high)
+      setPlaylists(json.items);
+      console.log(json.items)
+      // console.log(json.items.length)
+      // console.log(json.items[0].snippet.thumbnails);
+      // setImg(json.items[0].snippet.thumbnails.high)
 
     } catch (error) {
       console.error(error.message)
@@ -29,15 +34,23 @@ function App() {
   }
 
   return (
-    <>
+    <div>
       <div className="p-5">
         <h1 className="text-2xl font-bold mb-2">Hello World</h1> 
-        <button className="border px-2 py-1 border-black" onClick={handleClick}>Click me</button>
-        {img ? 
-          <img src={img.url} width={img.width} height={img.height} alt="" />
-        : <></>}
+        <button className="border px-2 py-1 border-black mb-5 bg-blue-300" onClick={handleClick}>Click me</button>
+
+        {/* <Video imgSrc={"ef"}  /> */}
+        {playlists.map(playlist => {
+          console.log(playlist)
+          return(
+            <div key={playlist.id} className=" bg-white">
+              <Video title={playlist.snippet.title} videoID={playlist.id} thumbnail={playlist.snippet.thumbnails.standard} />
+            </div>
+
+          )
+        })}
       </div>
-    </>
+    </div>
   )
 }
 
